@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const config = require("./config.json");
 const botCommands = require("./commands")
 const bot = new Discord.Client();
+const fs = require('fs');
 
 bot.commands = new Discord.Collection();
 
@@ -10,7 +11,7 @@ bot.login(config.bot_token);
 Object.keys(botCommands).map(key => bot.commands.set(botCommands[key].name, botCommands[key]));
 
 bot.on('ready', () => {
-    console.info(`Logged in as ${bot.user.tag}!`);
+    console.log(`Logged in as ${bot.user.tag}!`);
 });
 
 bot.on('message', msg => {
