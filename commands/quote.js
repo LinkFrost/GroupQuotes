@@ -23,7 +23,7 @@ module.exports = {
             const quotes = require("./../quotes")
             let newQuote = {quote: quote};
             quotes.push(newQuote);
-            fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, 4), err => {
+            fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), err => {
                 if(err) throw err;
                 console.log("Working");
             });
