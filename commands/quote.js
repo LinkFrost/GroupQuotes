@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = "./quotes.json";
+const quotes = require("./../quotes")
 
 module.exports = {
     name: "!quote",
@@ -14,29 +15,30 @@ module.exports = {
             } else {
                 module.exports.addQuote(msg, addArgs);
                 msg.channel.send("Stored your quote");
-            }
+            } 
+        }
+
+        if(cmd.includes("list")) {
+            module.exports.listQuotes(msg);
         }
     },
 
     addQuote: (msg, quote) => {
-        if(fs.existsSync(path)) {
-            const quotes = require("./../quotes")
-            let newQuote = {quote: quote};
-            quotes.push(newQuote);
-            fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), err => {
-                if(err) throw err;
-                console.log("Working");
-            });
+        let newQuote = {quote: quote};
+        quotes.push(newQuote);
+
+        fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), error => {
+            if(error) throw error;
+            console.log("Successfully added quote to quotes.json");
+        });
+    },
+
+    listQuotes: (msg) => {
+        if(quotes.length !== 0) {
+            quotes.forEach(q => msg.channel.send(q.quote));
         }
         else {
-            let quoteJSON = [];
-            let quoteObj = {};
-            quoteObj.quote = quote;
-            quoteJSON.push(quoteObj);
-
-            let quoteString = JSON.stringify(quoteJSON);
-
-            fs.writeFile("quotes.json", quoteString, function(error, result) {if(error) {console.log("error")}});
+            msg.channel.send("There are currently no quotes stored. Please use *!quote add* to add some quotes first");
         }
     },
 
