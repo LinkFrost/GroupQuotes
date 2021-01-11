@@ -1,9 +1,9 @@
 const Discord = require("discord.js");
-const config = require("./config.json");
+const config = require("./config.json"); //Added to .gitignore
 const botCommands = require("./commands")
 const bot = new Discord.Client();
 const fs = require('fs');
-const path = "./quotes.json"; 
+const path = "./quotes.json"; //Added to .gitignore
 
 bot.commands = new Discord.Collection();
 

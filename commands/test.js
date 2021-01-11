@@ -4,7 +4,7 @@ module.exports = {
     execute(msg) {
         const prefix = "!";
         if(msg.content[0] === prefix) {
-            msg.channel.send("Testing!");
+            msg.channel.send("Haha!");
         }
     }
 }
