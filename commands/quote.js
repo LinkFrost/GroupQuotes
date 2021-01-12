@@ -1,44 +1,60 @@
 const fs = require('fs');
-const path = "./quotes.json";
-const quotes = require("./../quotes")
+const path = "./../quotes.json"; //Added to .gitignore
+let quotes = require(path);
 
 module.exports = {
     name: "!quote",
     description: "The base command for the bot",
 
     processCommand: (msg, cmd) => {
-        if(cmd.includes("add")) {
-            const addArgs = cmd.substring(cmd.indexOf(" "), cmd.length);
-
-            if(addArgs === "add") {
-                msg.channel.send("Please call again with a quotation to add")
-            } else {
-                module.exports.addQuote(msg, addArgs);
-                msg.channel.send("Stored your quote");
-            } 
+        const commandList = ["add", "list"];
+        const cmdArgs = cmd.split(" ");
+    
+        if(commandList.includes(cmdArgs[0])) {
+            switch(cmdArgs[0]) {
+                case "add": 
+                    module.exports.addQuote(msg, cmd.substring(cmd.indexOf(" "), cmd.length));
+                    msg.reply("Stored your quote");
+                    break;
+                case "list":
+                    module.exports.listQuotes(msg);
+                    break;
+            }
         }
-
-        if(cmd.includes("list")) {
-            module.exports.listQuotes(msg);
+        else {
+            msg.channel.send("Unknown command. For help, use *!quote help*");
         }
     },
 
     addQuote: (msg, quote) => {
-        let newQuote = {quote: quote};
-        quotes.push(newQuote);
+        if(quote === "add") {
+            msg.reply("Please call again with a quotation to add");
+        }
+        else {
+            const quoteArgs = quote.split(/([",-])/);
+
+            if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-") {
+                quotes.push({
+                    quote: [quoteArgs[1], quoteArgs[2], quoteArgs[3]].join(''), 
+                    author: quoteArgs[6]
+                });
+            }
+            else {
+                msg.reply("Invalid quote format!");
+            }
+        }
 
         fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), error => {
             if(error) throw error;
-            console.log("Successfully added quote to quotes.json");
         });
     },
 
     listQuotes: (msg) => {
         if(quotes.length !== 0) {
-            quotes.forEach(q => msg.channel.send(q.quote));
+            quotes.forEach(q => msg.channel.send(q.quote + " -" + q.author));
         }
         else {
-            msg.channel.send("There are currently no quotes stored. Please use *!quote add* to add some quotes first");
+            msg.reply("There are currently no quotes stored. Please use *!quote add* to add some quotes first");
         }
     },
 
