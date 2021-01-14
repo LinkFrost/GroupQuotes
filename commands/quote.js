@@ -1,6 +1,9 @@
+const Discord = require('discord.js');
+const bot = new Discord.Client();
 const fs = require('fs');
 const path = "./../quotes.json"; //Added to .gitignore
 let quotes = require(path);
+const config = require("./../config.json"); //Added to .gitignore
 
 module.exports = {
     name: "!quote",
@@ -14,14 +17,12 @@ module.exports = {
             switch(cmdArgs[0]) {
                 case "add": 
                     module.exports.addQuote(msg, cmd.substring(cmd.indexOf(" "), cmd.length));
-                    msg.reply("Stored your quote");
                     break;
                 case "list":
                     module.exports.listQuotes(msg);
                     break;
             }
-        }
-        else {
+        } else {
             msg.channel.send("Unknown command. For help, use *!quote help*");
         }
     },
@@ -29,32 +30,65 @@ module.exports = {
     addQuote: (msg, quote) => {
         if(quote === "add") {
             msg.reply("Please call again with a quotation to add");
-        }
-        else {
+        } else {
             const quoteArgs = quote.split(/([",-])/);
 
-            if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-") {
+            if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-" && quoteArgs[6] !== "" && quoteArgs[6][0] === " ") {
+                const quotation = quoteArgs[2];
+                const author = quoteArgs[6].substring(1);
+
                 quotes.push({
-                    quote: [quoteArgs[1], quoteArgs[2], quoteArgs[3]].join(''), 
-                    author: quoteArgs[6]
+                    quote: quotation, 
+                    author: author
                 });
-            }
-            else {
+
+                const embededQuoteMessage = new Discord.MessageEmbed()
+                    .setColor('#d78ee4')
+                    .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
+                    .setTitle('Successfully stored your quote!')
+                    .setDescription(`"${quotation}" - ${author}`)
+                    .setTimestamp()
+
+                msg.reply(embededQuoteMessage);
+
+                msg.client.channels.cache.get(config.textChannelID).send(new Discord.MessageEmbed()
+                                                                .setColor('#d78ee4')
+                                                                .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
+                                                                .setTitle('Successfully stored your quote!')
+                                                                .setDescription(`"${quotation}" - ${author}`)
+                                                                .setTimestamp()
+                                                            );
+            } else {
                 msg.reply("Invalid quote format!");
             }
         }
 
         fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), error => {
-            if(error) throw error;
+            if(error){
+                console.log("There was an error writing the file quotes.json");
+                throw error;
+            } else {
+                console.log("Added new quotation to quotes.json");
+            }
         });
     },
 
     listQuotes: (msg) => {
         if(quotes.length !== 0) {
-            quotes.forEach(q => msg.channel.send(q.quote + " -" + q.author));
-        }
-        else {
+            let embededQuoteMessage = new Discord.MessageEmbed()
+                .setColor('#d78ee4')
+                .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
+                .setTitle('Saved Quotations')
+                .setTimestamp();
+
+            quotes.forEach(q => { embededQuoteMessage.addField(`"${q.quote}"`, q.author, false) });
+
+            msg.channel.send(embededQuoteMessage);
+
+            console.log("Listed all quotes from quotes.json");
+        } else {
             msg.reply("There are currently no quotes stored. Please use *!quote add* to add some quotes first");
+            console.log("Attempted to call list with empty quotes.json");
         }
     },
 
@@ -66,8 +100,7 @@ module.exports = {
 
             if(args === "!quote") {
                 msg.channel.send("Missing arguments! For help, use *!quote help*");
-            }
-            else {
+            } else {
                 this.processCommand(msg, args);
             }
         }

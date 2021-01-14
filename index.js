@@ -21,8 +21,7 @@ bot.on('ready', () => {
         fs.writeFile("quotes.json", quoteString, function(error, result) {
             if(error) {
                 console.log("There was an error writing the file quotes.json")
-            }
-            else {
+            } else {
                 console.log("Created quotes.json");
             }
         });
