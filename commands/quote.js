@@ -31,7 +31,7 @@ module.exports = {
         if(quote === "add") {
             msg.reply("Please call again with a quotation to add");
         } else {
-            const quoteArgs = quote.split(/([",-])/);
+            const quoteArgs = quote.split(/(["-])/);
 
             if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-" && quoteArgs[6] !== "" && quoteArgs[6][0] === " ") {
                 const quotation = quoteArgs[2];
