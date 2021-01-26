@@ -31,7 +31,7 @@ module.exports = {
         if(quote === "add") {
             msg.reply("Please call again with a quotation to add");
         } else {
-            const quoteArgs = quote.split(/([",-])/);
+            const quoteArgs = quote.split(/(["-])/);
 
             if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-" && quoteArgs[6] !== "" && quoteArgs[6][0] === " ") {
                 const quotation = quoteArgs[2];
@@ -53,9 +53,8 @@ module.exports = {
 
                 msg.client.channels.cache.get(config.textChannelID).send(new Discord.MessageEmbed()
                                                                 .setColor('#d78ee4')
-                                                                .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
-                                                                .setTitle('Successfully stored your quote!')
-                                                                .setDescription(`"${quotation}" - ${author}`)
+                                                                .setTitle(`"${quotation}"`)
+                                                                .setDescription(`- ${author}`)
                                                                 .setTimestamp()
                                                             );
             } else {
