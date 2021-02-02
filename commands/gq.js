@@ -1,34 +1,35 @@
 const Discord = require('discord.js');
-const bot = new Discord.Client();
 const fs = require('fs');
 const path = "./../quotes.json"; //Added to .gitignore
 let quotes = require(path);
-const config = require("./../config.json"); //Added to .gitignore
+const config = require("../config.json"); //Added to .gitignore
 
 module.exports = {
-    name: "!quote",
+    name: "!gq",
     description: "The base command for the bot",
 
     processCommand: (msg, cmd) => {
-        const commandList = ["add", "list"];
+        const commandList = ["a", "l", "help"];
         const cmdArgs = cmd.split(" ");
     
         if(commandList.includes(cmdArgs[0])) {
             switch(cmdArgs[0]) {
-                case "add": 
+                case "a": 
                     module.exports.addQuote(msg, cmd.substring(cmd.indexOf(" "), cmd.length));
                     break;
-                case "list":
+                case "l":
                     module.exports.listQuotes(msg);
                     break;
+                case "help":
+                    module.exports.help(msg);
             }
         } else {
-            msg.channel.send("Unknown command. For help, use *!quote help*");
+            msg.channel.send("Unknown command. For help, use *!gq help*");
         }
     },
 
     addQuote: (msg, quote) => {
-        if(quote === "add") {
+        if(quote === "a") {
             msg.reply("Please call again with a quotation to add");
         } else {
             const quoteArgs = quote.split(/(["-])/);
@@ -86,9 +87,14 @@ module.exports = {
 
             console.log("Listed all quotes from quotes.json");
         } else {
-            msg.reply("There are currently no quotes stored. Please use *!quote add* to add some quotes first");
+            msg.reply("There are currently no quotes stored. Please use *!gq a* to add some quotes first");
             console.log("Attempted to call list with empty quotes.json");
         }
+    },
+
+    help: (msg) => {
+        let helpString = "Group Quotes Bot Commands *(Use !gq [command] [parameter] to use bot)* \n *!gq a [\"Quotation\" - Author]* - Adds a quotation to the local file\n *!gq l [Author]* - Lists all the quotations from the specified author. If called with no parameters, all quotations will be listed";
+        msg.channel.send(helpString);
     },
 
     execute(msg) {
@@ -97,8 +103,8 @@ module.exports = {
         if(msg.content[0] === prefix) {
             const args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length);
 
-            if(args === "!quote") {
-                msg.channel.send("Missing arguments! For help, use *!quote help*");
+            if(args === "!gq") {
+                msg.channel.send("Missing arguments! For help, use *!gq help*");
             } else {
                 this.processCommand(msg, args);
             }
