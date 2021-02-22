@@ -4,7 +4,7 @@ const uri = process.env.uri;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 require("dotenv").config();
 
-module.exports = {
+module.exports = { 
     name: "!gq",
     description: "The base command for the bot",
 
