@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
-const fs = require('fs');
-const path = "./../quotes.json"; //Added to .gitignore
-let quotes = require(path);
-const config = require("../config.json"); //Added to .gitignore
+const MongoClient = require('mongodb').MongoClient;
+const uri = process.env.uri;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+require("dotenv").config();
 
 module.exports = {
     name: "!gq",
@@ -36,11 +36,19 @@ module.exports = {
 
             if(quoteArgs[1] === "\"" && quoteArgs[3] === "\"" && quoteArgs[5] === "-" && quoteArgs[6] !== "" && quoteArgs[6][0] === " ") {
                 const quotation = quoteArgs[2];
-                const author = quoteArgs[6].substring(1);
+                const author = quoteArgs[6].substring(1);    
 
-                quotes.push({
-                    quote: quotation, 
-                    author: author
+                client.connect(async function() {
+                    const collection = client.db("gq_bots_chads").collection("quotes");
+            
+                    console.log("Adding quotation to MongoDB...");
+            
+                    await collection.insertOne({quote: quotation, author: author}, (err, res) => {
+                        if(err) console.log(err);
+                        else console.log(`Added quote by ${res.ops[0].author}`);
+                    });
+            
+                    client.close();
                 });
 
                 const embededQuoteMessage = new Discord.MessageEmbed()
@@ -52,7 +60,7 @@ module.exports = {
 
                 msg.reply(embededQuoteMessage);
 
-                msg.client.channels.cache.get(config.textChannelID).send(new Discord.MessageEmbed()
+                msg.client.channels.cache.get(process.env.textChannelID).send(new Discord.MessageEmbed()
                                                                 .setColor('#d78ee4')
                                                                 .setTitle(`"${quotation}"`)
                                                                 .setDescription(`- ${author}`)
@@ -62,38 +70,51 @@ module.exports = {
                 msg.reply("Invalid quote format!");
             }
         }
-
-        fs.writeFileSync("quotes.json", JSON.stringify(quotes, null, "\t"), error => {
-            if(error){
-                console.log("There was an error writing the file quotes.json");
-                throw error;
-            } else {
-                console.log("Added new quotation to quotes.json");
-            }
-        });
     },
 
     listQuotes: (msg) => {
-        if(quotes.length !== 0) {
-            let embededQuoteMessage = new Discord.MessageEmbed()
-                .setColor('#d78ee4')
-                .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
-                .setTitle('Saved Quotations')
-                .setTimestamp();
+        // if(quotes.length !== 0) {
+        //     let embededQuoteMessage = new Discord.MessageEmbed()
+        //         .setColor('#d78ee4')
+        //         .setThumbnail('https://i.kym-cdn.com/photos/images/original/000/689/757/270.jpg')
+        //         .setTitle('Saved Quotations')
+        //         .setTimestamp();
 
-            quotes.forEach(q => { embededQuoteMessage.addField(`"${q.quote}"`, q.author, false) });
+        //     quotes.forEach(q => { embededQuoteMessage.addField(`"${q.quote}"`, q.author, false) });
 
-            msg.channel.send(embededQuoteMessage);
+        //     msg.channel.send(embededQuoteMessage);
 
-            console.log("Listed all quotes from quotes.json");
-        } else {
-            msg.reply("There are currently no quotes stored. Please use *!gq a* to add some quotes first");
-            console.log("Attempted to call list with empty quotes.json");
-        }
+        //     console.log("Listed all quotes from quotes.json");
+        // } else {
+        //     msg.reply("There are currently no quotes stored. Please use *!gq a* to add some quotes first");
+        //     console.log("Attempted to call list with empty quotes.json");
+        // }
+
+        client.connect(async function() {
+            const collection = client.db("gq_bots_chads").collection("quotes");
+    
+            console.log("Listing quotations from MongoDB...");
+
+            let collectionSize = await collection.countDocuments();
+
+            if(collectionSize === 0) {
+                msg.channel.reply("There are currently no quotes stored in the database! Please use *!gq a* to add some quotes first!");
+            } else {
+                msg.channel.reply("This command is still a WIP!");
+            }
+    
+            client.close();
+        });
     },
 
     help: (msg) => {
-        let helpString = "Group Quotes Bot Commands *(Use !gq [command] [parameter] to use bot)* \n *!gq a [\"Quotation\" - Author]* - Adds a quotation to the local file\n *!gq l [Author]* - Lists all the quotations from the specified author. If called with no parameters, all quotations will be listed";
+        const helpString = new Discord.MessageEmbed()
+        .setColor('#d78ee4')
+        .setTitle('Group Quotes Bot Commands')
+        .setDescription(`*Use !gq [command] [parameter] to use the bot*`)
+        .addField('*!gq a [\"Quotation\" - Author]*', 'Adds a quotation to the database.', false)
+        .addField('*!gq l [Author]*', 'Lists all the quotations from the specified author. If called with no parameters, all quotations will be listed', false);
+        
         msg.channel.send(helpString);
     },
 

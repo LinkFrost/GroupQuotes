@@ -1,31 +1,20 @@
 const Discord = require("discord.js");
-const config = require("./config.json"); //Added to .gitignore
 const bot = new Discord.Client();
-const fs = require('fs');
-const path = "./quotes.json"; //Added to .gitignore
+const MongoClient = require('mongodb').MongoClient;
+const uri = process.env.uri;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+require("dotenv").config();
 
-bot.login(config.bot_token);
+// bot.login(config.bot_token);
+bot.login(process.env.bot_token);
 
-bot.on('ready', () => {
+bot.on('ready', async () => {
     console.log(`Logged in as ${bot.user.tag}!`);
 
-    //Checks for the quotes.json file. If it does not exist, it is created before any commands can be processed as soon as the bot logs in.
-    if(fs.existsSync(path)) {
-        console.log("quotes.json detected.")
-    }
-    else {
-        let quoteJSON = [];
-
-        let quoteString = JSON.stringify(quoteJSON);
-
-        fs.writeFile("quotes.json", quoteString, function(error, result) {
-            if(error) {
-                console.log("There was an error writing the file quotes.json")
-            } else {
-                console.log("Created quotes.json");
-            }
-        });
-    }
+    client.connect(async function() {
+        console.log("Connected to MongoDB");
+        client.close();
+    });
 });
 
 bot.on('message', async msg => {

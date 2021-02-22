@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/xlinkfrostx/Group-Quotes-Discord-Bot#readme",
   "dependencies": {
-    "discord.js": "^12.5.1"
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.6.4"
   }
 }
