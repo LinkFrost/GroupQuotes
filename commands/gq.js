@@ -48,7 +48,7 @@ module.exports = {
                         else console.log(`Added quote by ${res.ops[0].author}`);
                     });
             
-                    client.close();
+                    // client.close();
                 });
 
                 const embededQuoteMessage = new Discord.MessageEmbed()
@@ -103,7 +103,7 @@ module.exports = {
                 msg.reply("This command is still a WIP!");
             }
     
-            client.close();
+            // client.close();
         });
     },
 
