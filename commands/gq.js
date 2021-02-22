@@ -98,9 +98,9 @@ module.exports = {
             let collectionSize = await collection.countDocuments();
 
             if(collectionSize === 0) {
-                msg.channel.reply("There are currently no quotes stored in the database! Please use *!gq a* to add some quotes first!");
+                msg.reply("There are currently no quotes stored in the database! Please use *!gq a* to add some quotes first!");
             } else {
-                msg.channel.reply("This command is still a WIP!");
+                msg.reply("This command is still a WIP!");
             }
     
             client.close();
