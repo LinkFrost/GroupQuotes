@@ -5,7 +5,6 @@ const uri = process.env.uri;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 require("dotenv").config();
 
-// bot.login(config.bot_token);
 bot.login(process.env.bot_token);
 
 bot.on('ready', async () => {
