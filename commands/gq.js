@@ -84,6 +84,35 @@ module.exports = {
             return newArr;
         }
 
+        function createPaginatedList(quoteArr) {
+            let embededMessageList = [];
+            let pageCounter = 1;
+
+            for(let i = 0; i < quoteArr.length; i++) {
+                let embededQuoteMessage = new Discord.MessageEmbed().setTitle(`Quotes - Page ${pageCounter}`).setColor('#d78ee4');
+
+                for(let j = 0; j < quoteArr[i].length; j++) {
+                    embededQuoteMessage.addField(`"${quoteArr[i][j].quote}"`, quoteArr[i][j].author, false);
+                }
+
+                embededMessageList.push(embededQuoteMessage);
+                pageCounter++;
+            }
+
+            const embedPage = new Pagination.Embeds()
+                .setArray(embededMessageList)
+                .setChannel(msg.channel)
+                .setPage(1)
+                .on('start', (user) => console.log(`${user} started Pagination`))
+                .on('finish', (user) => console.log(`Finished! User: ${user.username}`))
+                .on('react', (user, emoji) => console.log(`Reacted! User: ${user.username} | Emoji: ${emoji.name} (${emoji.id})`))
+                .on('error', console.error)
+                .setDeleteOnTimeout(true)
+                .setTimeout(180000);
+
+            return embedPage;
+        }
+
         client.connect(async function() {
             console.log("Listing quotations from MongoDB...");
 
@@ -94,38 +123,14 @@ module.exports = {
                 msg.reply("There are currently no quotes stored in the database! Please use *!gq a* to add some quotes first!");
             }
     
-            let allQuotes = await collection.find().sort({"_id":1}).toArray().then(quotes => {return quotes});
-            let splitQuotes = splitArrToArr(allQuotes, 10);
+            const allQuotes = await collection.find().sort({"_id":1}).toArray().then(quotes => {return quotes});
            
             if(args === "l") {
-                let embededMessageList = [];
-                let pageCounter = 1;
-
-                for(let i = 0; i < splitQuotes.length; i++) {
-                    let embededQuoteMessage = new Discord.MessageEmbed().setTitle(`Quotes - Page ${pageCounter}`).setColor('#d78ee4');
-
-                    for(let j = 0; j < splitQuotes[i].length; j++) {
-                        embededQuoteMessage.addField(`"${splitQuotes[i][j].quote}"`, splitQuotes[i][j].author, false);
-                    }
-
-                    embededMessageList.push(embededQuoteMessage);
-                    pageCounter++;
-                }
-
-                const embedPage = new Pagination.Embeds()
-                    .setArray(embededMessageList)
-                    .setChannel(msg.channel)
-                    .setPage(1)
-                    .on('start', (user) => console.log(`${user} started Pagination`))
-                    .on('finish', (user) => console.log(`Finished! User: ${user.username}`))
-                    .on('react', (user, emoji) => console.log(`Reacted! User: ${user.username} | Emoji: ${emoji.name} (${emoji.id})`))
-                    .on('error', console.error)
-                    .setDeleteOnTimeout(true)
-                    .setTimeout(180000);
-
+                const embedPage = createPaginatedList(splitArrToArr(allQuotes, 10));
                 await embedPage.build();
-
-                await msg.channel.send(embedPage);
+            } else {
+                const embedPage = createPaginatedList(splitArrToArr(allQuotes.filter(q => args.toLowerCase().substring(1, args.length).split(" ").some(a => q.author.toLowerCase().includes(a))), 10))
+                await embedPage.build();
             }
         });
     },
