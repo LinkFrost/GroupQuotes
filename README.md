@@ -19,6 +19,6 @@ To use the bot, the following commands are available:
 **Adding a quote:**  
 `!gq a [quote]`, where `[quote]` is of the format <"Quotation" - Author>.  
 **Listing quotes:**  
-`!gq l [author]`, where `[author]` is the name of the quote author you are searching for.  
+`!gq l [author]`, where `[author]` is the name of the quote author you are searching for. If called with no author arguments, all quotes will be listed. Whenever this command is used, the quotes will be listed in groups of 10 via a paginated embeded message that uses reaction emojis for navigation (These messages will delete themselves after 3 minutes)  
 *Help:*  
 `!gq help`, which shows all of the available commands and how to use them.  
