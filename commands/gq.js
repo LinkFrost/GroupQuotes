@@ -41,7 +41,7 @@ module.exports = {
                 const author = quoteArgs[6].substring(1);    
 
                 client.connect(async function() {
-                    const collection = client.db("gq_bots_chads").collection("quotes");
+                    const collection = client.db(process.env.database_name).collection("quotes");
             
                     console.log("Adding quotation to MongoDB...");
             
