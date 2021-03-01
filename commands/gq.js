@@ -116,7 +116,7 @@ module.exports = {
         client.connect(async function() {
             console.log("Listing quotations from MongoDB...");
 
-            const collection = client.db("gq_bots_chads").collection("quotes");
+            const collection = client.db(process.env.database_name).collection("quotes");
             const collectionSize = await collection.countDocuments();
 
             if(collectionSize === 0) {
