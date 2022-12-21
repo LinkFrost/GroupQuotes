@@ -2,3 +2,4 @@
 .env.development
 /node_modules
 .OLD/
+.DS_Store
