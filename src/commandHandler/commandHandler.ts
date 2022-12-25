@@ -1,14 +1,22 @@
 import { Interaction, REST, Routes } from "discord.js";
-import Ping from "./commands/ping";
+import * as quote from "./commands/quote";
+import * as setGallery from "./commands/setGallery";
+import { Db } from "mongodb";
+import { createClient } from "redis";
 
-const commands = [Ping.commandData];
+const commands = [quote.commandData, setGallery.commandData];
 
-export const handleInteraction = async (interaction: Interaction) => {
+export const handleInteractions = async (interaction: Interaction, database: Db, redisClient: ReturnType<typeof createClient>) => {
   if (!interaction.isCommand()) return;
 
   switch (interaction.commandName) {
-    case "ping": {
-      Ping.interaction(interaction);
+    case "quote": {
+      quote.handleInteraction(interaction, database, redisClient);
+      break;
+    }
+
+    case "set-gallery": {
+      setGallery.handleInteraction(interaction, database, redisClient);
       break;
     }
   }
