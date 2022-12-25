@@ -70,7 +70,7 @@ const handleButton = async (interaction: ButtonInteraction, database: Db, redisC
         }, 500);
       }
 
-      const updatedEmbedMessage = new EmbedBuilder().setColor("#d78ee4").setTitle("Success").setDescription(`Existing quotes have been sent in <#${galleryChannelId}>`);
+      const updatedEmbedMessage = new EmbedBuilder().setColor("#d78ee4").setTitle("Success").setDescription(`Existing quotes have been sent in <#${galleryChannelId}>.`);
 
       const updatedActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()

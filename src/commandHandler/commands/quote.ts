@@ -26,15 +26,17 @@ const handleInteraction = async (interaction: CommandInteraction, database: Db, 
 
     await interaction.reply({ embeds: [embedReply] });
 
-    const galleryChannelId = (await redisClient.get(guildId)) as string;
+    const galleryChannelId = await redisClient.get(guildId);
 
-    const channel = interaction.client.channels.cache.find((channel) => {
-      if (channel.id === galleryChannelId && channel.type === ChannelType.GuildText) return channel.id;
-    }) as TextChannel;
+    if (galleryChannelId !== null) {
+      const channel = interaction.client.channels.cache.find((channel) => {
+        if (channel.id === galleryChannelId && channel.type === ChannelType.GuildText) return channel.id;
+      }) as TextChannel;
 
-    const embedGalleryQuote = new EmbedBuilder().setColor("#d78ee4").setTitle(`"${quoteObj.quote}"`).setDescription(`- ${quoteObj.author}`).setTimestamp(quoteObj.createDate);
+      const embedGalleryQuote = new EmbedBuilder().setColor("#d78ee4").setTitle(`"${quoteObj.quote}"`).setDescription(`- ${quoteObj.author}`).setTimestamp(quoteObj.createDate);
 
-    await channel.send({ embeds: [embedGalleryQuote] });
+      await channel.send({ embeds: [embedGalleryQuote] });
+    }
   } catch (err) {
     console.error(err);
     interaction.reply("There was an error saving your quote. Please try again or contact an admin");
