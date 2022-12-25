@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, TextChannel, ChannelType } from "discord.js";
 import { Db } from "mongodb";
 import { createClient } from "redis";
 
@@ -22,9 +22,19 @@ const handleInteraction = async (interaction: CommandInteraction, database: Db, 
 
     await collection.insertOne(quoteObj);
 
-    const embedReply = new EmbedBuilder().setColor("#d78ee4").setTitle("Successfully added your quote!").setDescription(`"${quoteObj.quote}" - ${quoteObj.author}`).setTimestamp();
+    const embedReply = new EmbedBuilder().setColor("#d78ee4").setTitle("Successfully added your quote!").setDescription(`"${quoteObj.quote}" - ${quoteObj.author}`).setTimestamp(quoteObj.createDate);
 
     await interaction.reply({ embeds: [embedReply] });
+
+    const galleryChannelId = (await redisClient.get(guildId)) as string;
+
+    const channel = interaction.client.channels.cache.find((channel) => {
+      if (channel.id === galleryChannelId && channel.type === ChannelType.GuildText) return channel.id;
+    }) as TextChannel;
+
+    const embedGalleryQuote = new EmbedBuilder().setColor("#d78ee4").setTitle(`"${quoteObj.quote}"`).setDescription(`- ${quoteObj.author}`).setTimestamp(quoteObj.createDate);
+
+    await channel.send({ embeds: [embedGalleryQuote] });
   } catch (err) {
     console.error(err);
     interaction.reply("There was an error saving your quote. Please try again or contact an admin");

@@ -1,23 +1,35 @@
 import { Interaction, REST, Routes } from "discord.js";
-import * as quote from "./commands/quote";
-import * as setGallery from "./commands/setGallery";
 import { Db } from "mongodb";
 import { createClient } from "redis";
+import * as quote from "./commands/quote";
+import * as setGallery from "./commands/setGallery";
 
 const commands = [quote.commandData, setGallery.commandData];
 
 export const handleInteractions = async (interaction: Interaction, database: Db, redisClient: ReturnType<typeof createClient>) => {
-  if (!interaction.isCommand()) return;
+  if (interaction.isCommand()) {
+    switch (interaction.commandName) {
+      case "quote": {
+        quote.handleInteraction(interaction, database, redisClient);
+        break;
+      }
 
-  switch (interaction.commandName) {
-    case "quote": {
-      quote.handleInteraction(interaction, database, redisClient);
-      break;
+      case "set-gallery": {
+        setGallery.handleInteraction(interaction, database, redisClient);
+        break;
+      }
     }
+  }
 
-    case "set-gallery": {
-      setGallery.handleInteraction(interaction, database, redisClient);
-      break;
+  if (interaction.isButton()) {
+    console.log(interaction);
+    const idParams = interaction.customId.split(" ");
+
+    switch (idParams[0]) {
+      case "set-gallery": {
+        setGallery.handleButton(interaction, database, redisClient);
+        break;
+      }
     }
   }
 };
