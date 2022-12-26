@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, TextChannel, ChannelType, APIEmbedField, Channel, ButtonStyle } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, TextChannel, ChannelType, APIEmbedField, ButtonStyle } from "discord.js";
 import { Db } from "mongodb";
 import { createClient } from "redis";
 import { Pagination } from "discordjs-button-embed-pagination";

@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, TextChannel, ChannelType, range, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, TextChannel, ChannelType } from "discord.js";
 import { Db } from "mongodb";
 import { createClient } from "redis";
 import { createErrorEmbed } from "../../utils/createErrorEmbed";

@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ChannelType, Client, EmbedBuilder, GuildMember, Interaction, REST, TextChannel } from "discord.js";
+import { ChannelType, Client, EmbedBuilder, GuildMember, REST, TextChannel } from "discord.js";
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
 import { handleInteractions, registerCommands } from "./commandHandler/commandHandler";
