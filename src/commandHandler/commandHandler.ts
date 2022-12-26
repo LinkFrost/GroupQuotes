@@ -3,8 +3,9 @@ import { Db } from "mongodb";
 import { createClient } from "redis";
 import * as quote from "./commands/quote";
 import * as setGallery from "./commands/setGallery";
+import * as list from "./commands/list";
 
-const commands = [quote.commandData, setGallery.commandData];
+const commands = [quote.commandData, setGallery.commandData, list.commandData];
 
 export const handleInteractions = async (interaction: Interaction, database: Db, redisClient: ReturnType<typeof createClient>) => {
   if (interaction.isCommand()) {
@@ -16,6 +17,11 @@ export const handleInteractions = async (interaction: Interaction, database: Db,
 
       case "set-gallery": {
         setGallery.handleInteraction(interaction, database, redisClient);
+        break;
+      }
+
+      case "list": {
+        list.handleInteraction(interaction, database, redisClient);
         break;
       }
     }
