@@ -1,6 +1,7 @@
-import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, ChannelType, TextChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle, Interaction, ButtonInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder, EmbedBuilder, ChannelType, TextChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle, Interaction, ButtonInteraction, GuildMember } from "discord.js";
 import { Db } from "mongodb";
 import { createClient } from "redis";
+import { createErrorEmbed } from "../../utils/createErrorEmbed";
 
 const commandData = new SlashCommandBuilder()
   .setName("set-gallery")
@@ -10,6 +11,13 @@ const commandData = new SlashCommandBuilder()
 
 const handleInteraction = async (interaction: CommandInteraction, database: Db, redisClient: ReturnType<typeof createClient>) => {
   try {
+    const member = interaction.member as GuildMember;
+    if (!member.roles.cache.some((role) => role.name === "GroupQuotes Admin")) {
+      const errorEmbed = createErrorEmbed("Permissions Error", "Using this command requires the ** GroupQuotes Admin** role! Please contact an admin.");
+      await interaction.reply({ embeds: [errorEmbed] });
+      return;
+    }
+
     const guildId = interaction.guildId as string;
     const collection = database.collection(guildId);
     const galleryChannelId = interaction.options.get("gallery-channel")?.value as string;
@@ -43,7 +51,9 @@ const handleInteraction = async (interaction: CommandInteraction, database: Db, 
     }
   } catch (err) {
     console.error(err);
-    interaction.reply("There was an error in setting the gallery channel. Please try again or contact an admin");
+    const errorEmbed = createErrorEmbed("Gallery Error", "There was an error in setting the gallery channel. Please try again or contact an admin.");
+    await interaction.reply({ embeds: [errorEmbed] });
+    return;
   }
 };
 
@@ -87,7 +97,7 @@ const handleButton = async (interaction: ButtonInteraction, database: Db, redisC
 
       interaction.update({ embeds: [updatedEmbedMessage], components: [updatedActionRow] });
     } catch (err) {
-      const updatedEmbedMessage = new EmbedBuilder().setColor("#d78ee4").setTitle("Error").setDescription("There was an error sending your quotes. Please try again or contact an admin.");
+      const updatedEmbedMessage = createErrorEmbed("Quotes Error", "There was an error sending your quotes. Please try again or contact an admin.");
 
       const updatedActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()

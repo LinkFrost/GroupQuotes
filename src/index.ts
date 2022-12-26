@@ -31,8 +31,12 @@ discordClient.login(BOT_TOKEN);
 // Upon joining a new server, check if a collection for it exists in the db. If not, create one
 discordClient.on("guildCreate", async (guild) => {
   const guildId = guild.id;
-
   console.log(`Joined server with guild id ${guildId}`);
+
+  guild.roles.create({
+    name: "GroupQuotes Admin",
+    color: "#d78ee4",
+  });
 
   try {
     const channel = guild.channels.cache.find((channel) => {
