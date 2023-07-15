@@ -28,7 +28,6 @@ export const handleInteractions = async (interaction: Interaction, database: Db,
   }
 
   if (interaction.isButton() && interaction.customId.split(" ")[0] === "set-gallery") {
-    // console.log(interaction);
     const idParams = interaction.customId.split(" ");
 
     switch (idParams[0]) {

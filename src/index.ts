@@ -20,7 +20,7 @@ const mongo_uri = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0.ddfnf.
 const mongoClient = new MongoClient(mongo_uri);
 const database = mongoClient.db("GroupQuotes");
 
-const redis_url = `redis://${REDIS_USER}:${REDIS_PASSWORD}@redis-16695.c98.us-east-1-4.ec2.cloud.redislabs.com:16695`;
+const redis_url = `redis://${REDIS_USER}:${REDIS_PASSWORD}@redis-11002.c245.us-east-1-3.ec2.cloud.redislabs.com:11002`;
 const redisClient = createClient({ url: redis_url });
 redisClient.connect();
 

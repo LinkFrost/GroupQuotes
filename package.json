@@ -19,7 +19,7 @@
   "homepage": "https://github.com/ashir-imran/Group-Quotes-Discord-Bot#readme",
   "dependencies": {
     "@types/node": "^18.11.17",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.11.0",
     "discordjs-button-embed-pagination": "^5.0.0",
     "dotenv": "^16.0.3",
     "mongodb": "^4.13.0",
